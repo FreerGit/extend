@@ -1,0 +1,3 @@
+(library
+ (name fast_log)
+ (libraries base ppxlib unix))

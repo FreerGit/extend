@@ -1,0 +1,26 @@
+(lang dune 3.14)
+
+(name fast_log)
+
+(generate_opam_files true)
+
+(source
+ (github username/reponame))
+
+(authors "Author Name")
+
+(maintainers "Maintainer Name")
+
+(license MIT)
+
+(documentation https://url/to/documentation)
+
+(package
+ (name fast_log)
+ (synopsis "A short synopsis")
+ (description "A longer description")
+ (depends ocaml dune ppxlib base re)
+ (tags
+  (topics "to describe" your project)))
+
+; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
