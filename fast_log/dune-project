@@ -19,7 +19,13 @@
  (name fast_log)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml dune ppxlib base re)
+ (depends
+  ocaml
+  dune
+  ppxlib
+  base
+  (core_bench :with-test)
+  (ppx_expect :with-test))
  (tags
   (topics "to describe" your project)))
 

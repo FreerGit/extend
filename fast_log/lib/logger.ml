@@ -1,4 +1,5 @@
 open Base
+open Output
 
 module Make (Q : Queue_intf.S) : Logger_intf.S = struct
   type _ ty =
@@ -21,6 +22,7 @@ module Make (Q : Queue_intf.S) : Logger_intf.S = struct
   let consumer_thread : unit Domain.t option ref = ref None
   let pool_max_size = 128
   let format_buffer = Buffer.create 256
+  let to_output = ref [||]
 
   let pools : arg array Queue.t array =
     Array.init (pool_max_size + 1) ~f:(fun _ -> Queue.create ())
@@ -97,7 +99,11 @@ module Make (Q : Queue_intf.S) : Logger_intf.S = struct
     then (
       match Q.pop queue with
       | Some entry ->
-        Stdlib.print_endline (format_entry entry);
+        let formatted = format_entry entry in
+        Array.iter !to_output ~f:(fun output ->
+          output.write formatted;
+          output.flush ());
+        (* Stdlib.print_endline (format_entry entry); *)
         return_args_array entry.args;
         consumer_loop ~sleep_us:(max 10 (sleep_us / 2)) 128
       | None ->
@@ -108,7 +114,8 @@ module Make (Q : Queue_intf.S) : Logger_intf.S = struct
           consumer_loop ~sleep_us:(min 500 (sleep_us * 3 / 2)) 128))
   ;;
 
-  let init () =
+  let init ~outputs () =
+    to_output := Array.of_list outputs;
     running := true;
     consumer_thread := Some (Domain.spawn (fun _ -> consumer_loop ~sleep_us:1 128))
   ;;

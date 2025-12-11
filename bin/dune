@@ -1,6 +1,0 @@
-(executable
- (public_name fast_log)
- (name main)
- (libraries fast_log unix)
- (preprocess
-  (pps ppx_log_printer)))

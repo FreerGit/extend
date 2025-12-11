@@ -1,0 +1,6 @@
+# dune init library ppx_defer
+# OCAMLPARAM: unset
+# Shared cache: enabled-except-user-rules
+# Shared cache location: /home/a7/.cache/dune/db
+# Workspace root: /home/a7/dev/extend
+# Auto-detected concurrency: 6

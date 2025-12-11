@@ -14,7 +14,8 @@ depends: [
   "dune" {>= "3.14"}
   "ppxlib"
   "base"
-  "re"
+  "core_bench" {with-test}
+  "ppx_expect" {with-test}
   "odoc" {with-doc}
 ]
 build: [
