@@ -1,2 +1,14 @@
-(test
- (name test_ppx_defer))
+(library
+ (name test_ppx_defer)
+ (libraries ppx_defer ppx_defer.runtime)
+ (modules test_ppx_defer)
+ (preprocess
+  (pps ppx_expect ppx_defer ppx_bench))
+ (inline_tests)
+ (library_flags -linkall))
+
+(executable
+ (name run_benchmarks)
+ (libraries test_ppx_defer core_bench core_bench.inline_benchmarks)
+ (modules run_benchmarks)
+ (link_flags -linkall))

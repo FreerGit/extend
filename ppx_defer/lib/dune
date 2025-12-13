@@ -1,2 +1,18 @@
 (library
- (name ppx_defer))
+ (name ppx_defer_runtime)
+ (public_name ppx_defer.runtime)
+ (modules ppx_defer_runtime)
+ (libraries base)
+ (preprocess
+  (pps ppx_inline_test ppx_expect))
+ (inline_tests))
+
+(library
+ (name ppx_defer)
+ (public_name ppx_defer)
+ (kind ppx_rewriter)
+ (modules ppx_defer)
+ (libraries ppxlib)
+ (preprocess
+  (pps ppxlib.metaquot))
+ (ppx_runtime_libraries ppx_defer.runtime))

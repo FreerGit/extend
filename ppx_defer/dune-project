@@ -19,7 +19,12 @@
  (name ppx_defer)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml)
+ (depends
+  ocaml
+  ppxlib
+  base
+  (ppx_expect :with-test)
+  (ppx_bench :with-test))
  (tags
   ("add topics" "to describe" your project)))
 

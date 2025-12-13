@@ -1,4 +1,0 @@
-(executable
- (public_name ppx_defer)
- (name main)
- (libraries ppx_defer))
