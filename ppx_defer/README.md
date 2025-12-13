@@ -17,4 +17,6 @@ let f () =
     B
     Exception: Failure "boom" *)
 ```
-This does occur some overhead, roughly ~20-50 on consumer hardware, due to extra closures being allocated.
+This does occur some overhead, since we have to allocate closures on a stack (LIFO). The performance hit is in the order of double digit nanoseconds. Roughly 50 nanos to introduce defers to a scope and subsequent defers are roughly 10 nanos. See the [test directory](./test) for benchmarks.
+
+[ppx_defer](.) and [ppx_assert](../ppx_assert) is heavily inspired by [Tigerstyle](https://tigerstyle.dev/)

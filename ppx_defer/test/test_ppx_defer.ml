@@ -38,15 +38,17 @@ let%expect_test "basic defer" =
     [%defer print_endline "3"];
     [%defer print_endline "2"];
     [%defer print_endline "1"];
-    print_endline "0"
+    print_endline "0";
+    "return"
   in
-  f ();
+  print_endline @@ f ();
   [%expect
     {|
     0
     1
     2
     3
+    return
     |}]
 ;;
 
@@ -54,13 +56,23 @@ let%expect_test "basic defer" =
 
 let%bench "with_defer overhead - no defers" = with_defer (fun _push -> 42)
 
+let%bench "with_defer overhead - w/ closure " =
+  with_defer (fun _push ->
+    let f = fun () -> () in
+    f ())
+;;
+
 let%bench "with_defer overhead - 1 defer" =
   with_defer (fun push ->
     push (fun () -> ());
     42)
 ;;
 
-let%bench "ppx_defer ovearhead assert" = [%defer assert true]
+let%bench "ppx_defer ovearhead assert" =
+  [%defer assert true];
+  [%defer assert true]
+;;
+
 let%bench "ppx_defer.if ovearhead assert" = [%defer.if true, assert true]
 let%bench "baseline - ppx_defer assert" = assert true
 let%bench "baseline - no defer mechanism" = 42
