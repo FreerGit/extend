@@ -1,3 +1,7 @@
 (library
  (name fast_log)
- (libraries base ppxlib unix))
+ (libraries base ppxlib unix)
+ (inline_tests)
+ (library_flags -linkall)
+ (preprocess
+  (pps ppx_expect ppx_bench)))

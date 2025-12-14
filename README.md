@@ -8,4 +8,3 @@
 - Logger levels
 - timestamp
 - MPSC is slow
-- SPSC safe?

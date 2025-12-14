@@ -6,7 +6,11 @@ module type S = sig
   (** [make ()] creates a new empty queue. *)
   val make : unit -> 'a t
 
-  (** [push t v] enqueues value [v] into queue [t]. *)
+  (** [push t v] enqueues value [v] into queue [t].
+    
+    When pushing a already full *bounded* queue will simply drop the entry in both
+    [SPSC] and [MPSC] versions. The unbounded versions will re-allocate for more memory
+  *)
   val push : 'a t -> 'a -> unit
 
   (** [pop t] removes and returns the next element from queue [t].

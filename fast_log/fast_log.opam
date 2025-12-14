@@ -15,6 +15,7 @@ depends: [
   "ppxlib"
   "base"
   "core_bench" {with-test}
+  "pxx_bench" {with-test}
   "ppx_expect" {with-test}
   "odoc" {with-doc}
 ]

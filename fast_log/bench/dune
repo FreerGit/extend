@@ -1,6 +1,6 @@
 (executable
- (public_name bench)
- (name runner)
- (libraries fast_log core_bench base)
+ (name run_benchmarks)
+ (libraries fast_log base core_bench core_bench.inline_benchmarks)
+ (link_flags -linkall)
  (preprocess
-  (pps ppx_log_printer)))
+  (pps ppx_log_printer ppx_bench)))
