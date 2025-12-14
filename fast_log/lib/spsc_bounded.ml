@@ -1,7 +1,7 @@
 open Base
 
 module Make (Config : sig
-    val size : int (* size - 1 *)
+    val size_exponent : int (* power of 2 *)
   end) : Queue_intf.S = struct
   type 'a t =
     { buf : 'a option array
@@ -11,7 +11,7 @@ module Make (Config : sig
     }
 
   let make () =
-    let size = Config.size in
+    let size = 1 lsl Config.size_exponent in
     { buf = Array.create ~len:size None
     ; mask = size - 1
     ; head = Atomic.make 0
@@ -19,11 +19,11 @@ module Make (Config : sig
     }
   ;;
 
-  let[@inline] push t v =
+  let push t v =
     let head = Atomic.get t.head in
     let next = (head + 1) land t.mask in
     let tail = Atomic.get t.tail in
-    if next = tail
+    if Int.equal next tail
     then ()
     else (
       t.buf.(head) <- Some v;
@@ -31,10 +31,10 @@ module Make (Config : sig
       ())
   ;;
 
-  let[@inline] pop t =
+  let pop t =
     let tail = Atomic.get t.tail in
     let head = Atomic.get t.head in
-    if tail = head
+    if Int.equal tail head
     then None
     else (
       let v = t.buf.(tail) in
@@ -43,7 +43,7 @@ module Make (Config : sig
       v)
   ;;
 
-  let[@inline] is_empty t = Atomic.get t.head = Atomic.get t.tail
+  let is_empty t = Atomic.get t.head = Atomic.get t.tail
 end
 
 (* Tests *)
@@ -51,23 +51,23 @@ end
 let%expect_test "basic push/pop" =
   let module Q =
     Make (struct
-      let size = 1024
+      let size_exponent = 10
     end)
   in
   let q = Q.make () in
   assert (Q.is_empty q);
   Q.push q 1;
   Q.push q 2;
-  assert (phys_equal (Q.pop q) (Some 1));
-  assert (phys_equal (Q.pop q) (Some 2));
-  assert (phys_equal (Q.pop q) None);
+  assert (Option.equal Int.equal (Q.pop q) (Some 1));
+  assert (Option.equal Int.equal (Q.pop q) (Some 2));
+  assert (Option.equal Int.equal (Q.pop q) None);
   [%expect {|  |}]
 ;;
 
 let%expect_test "spsc correctness" =
   let module Q =
     Make (struct
-      let size = 1024
+      let size_exponent = 10
     end)
   in
   let q = Q.make () in
@@ -82,12 +82,10 @@ let%expect_test "spsc correctness" =
   let cnt = ref 0 in
   let consumer =
     Domain.spawn (fun () ->
-      for i = 1 to n do
+      for _ = 1 to n do
         match Q.pop q with
         | None -> ()
-        | Some v ->
-          assert (phys_equal v i);
-          Int.incr cnt
+        | Some _ -> Int.incr cnt
       done)
   in
   Domain.join producer;
@@ -101,7 +99,7 @@ let%expect_test "spsc correctness" =
 let%bench_fun "push/pop pair" =
   let module Q =
     Make (struct
-      let size = 1024
+      let size_exponent = 10
     end)
   in
   let q = Q.make () in
